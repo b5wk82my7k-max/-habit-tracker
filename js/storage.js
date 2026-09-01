@@ -10,7 +10,10 @@ const Storage = {
   },
 
   saveHabits(habits) {
-    localStorage.setItem(STORAGE_KEYS.habits, JSON.stringify(habits));
+    localStorage.setItem(
+      STORAGE_KEYS.habits,
+      JSON.stringify(habits)
+    );
   },
 
   getCompletions() {
@@ -32,11 +35,49 @@ const Storage = {
     return habit;
   },
 
+  updateHabit(habitId, updates) {
+    const habits = this.getHabits();
+
+    const index = habits.findIndex(
+      habit => habit.id === habitId
+    );
+
+    if (index === -1) {
+      return false;
+    }
+
+    habits[index] = {
+      ...habits[index],
+      ...updates
+    };
+
+    this.saveHabits(habits);
+    return true;
+  },
+
+  deleteHabit(habitId) {
+    const habits = this.getHabits().filter(
+      habit => habit.id !== habitId
+    );
+
+    this.saveHabits(habits);
+
+    const completions = this.getCompletions().filter(
+      completion => completion.habitId !== habitId
+    );
+
+    this.saveCompletions(completions);
+
+    return true;
+  },
+
   toggleCompletion(habitId, dateKey) {
     const completions = this.getCompletions();
 
     const index = completions.findIndex(
-      c => c.habitId === habitId && c.dateKey === dateKey
+      c =>
+        c.habitId === habitId &&
+        c.dateKey === dateKey
     );
 
     if (index >= 0) {
@@ -57,7 +98,9 @@ const Storage = {
     const completions = this.getCompletions();
 
     return completions.some(
-      c => c.habitId === habitId && c.dateKey === dateKey
+      c =>
+        c.habitId === habitId &&
+        c.dateKey === dateKey
     );
   }
 };
