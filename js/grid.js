@@ -26,6 +26,7 @@ const Grid = {
 
     const cornerCell = document.createElement("div");
     cornerCell.className = "habit-name-cell";
+    cornerCell.textContent = "Habits";
     headerRow.appendChild(cornerCell);
 
     for (let day = 1; day <= daysCount; day++) {
@@ -35,11 +36,10 @@ const Grid = {
         day
       );
 
-      const isToday = DateHelpers.isToday(dateKey);
-
       const cell = document.createElement("div");
       cell.className =
-        "day-header-cell" + (isToday ? " today" : "");
+        "day-header-cell" +
+        (DateHelpers.isToday(dateKey) ? " today" : "");
 
       cell.innerHTML =
         `${day}<br>${DateHelpers.weekdayLetter(
@@ -64,16 +64,36 @@ const Grid = {
       const nameCell = document.createElement("div");
       nameCell.className = "habit-name-cell";
 
-      nameCell.innerHTML =
+      const nameWrapper = document.createElement("div");
+      nameWrapper.style.cssText =
+        "display:flex;align-items:center;gap:6px;";
+
+      const nameText = document.createElement("span");
+      nameText.style.cssText =
+        "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;";
+      nameText.innerHTML =
         `<span class="icon">${habit.icon}</span>${habit.name}`;
 
-      nameCell.style.cursor = "pointer";
-      nameCell.title = "Tap to edit or delete";
+      const editButton = document.createElement("button");
+      editButton.textContent = "✏️";
+      editButton.title = "Edit habit";
+      editButton.style.cssText = `
+        border:none;
+        background:transparent;
+        font-size:15px;
+        padding:4px;
+        flex-shrink:0;
+        cursor:pointer;
+      `;
 
-      nameCell.addEventListener("click", () => {
-        showHabitOptions(habit);
+      editButton.addEventListener("click", event => {
+        event.stopPropagation();
+        showHabitMenu(habit);
       });
 
+      nameWrapper.appendChild(nameText);
+      nameWrapper.appendChild(editButton);
+      nameCell.appendChild(nameWrapper);
       row.appendChild(nameCell);
 
       for (let day = 1; day <= daysCount; day++) {
@@ -83,21 +103,17 @@ const Grid = {
           day
         );
 
-        const isToday = DateHelpers.isToday(dateKey);
-
-        const completed = Storage.isCompleted(
-          habit.id,
-          dateKey
-        );
-
         const cell = document.createElement("div");
         cell.className =
-          "day-cell" + (isToday ? " is-today" : "");
+          "day-cell" +
+          (DateHelpers.isToday(dateKey) ? " is-today" : "");
 
         const inner = document.createElement("div");
         inner.className =
           "day-cell-inner" +
-          (completed ? " completed" : "");
+          (Storage.isCompleted(habit.id, dateKey)
+            ? " completed"
+            : "");
 
         inner.style.setProperty(
           "--habit-color",
@@ -141,80 +157,271 @@ const Grid = {
 };
 
 
-function showHabitOptions(habit) {
-  const choice = confirm(
-    `What do you want to do with "${habit.name}"?\n\n` +
-    `OK = Edit\n` +
-    `Cancel = Delete`
-  );
+function showHabitMenu(habit) {
+  const overlay = document.createElement("div");
 
-  if (choice) {
-    editHabit(habit);
-  } else {
-    deleteHabit(habit);
-  }
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+  `;
+
+  const modal = document.createElement("div");
+
+  modal.style.cssText = `
+    width:100%;
+    max-width:340px;
+    background:white;
+    color:#1C1C1E;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+    text-align:center;
+  `;
+
+  modal.innerHTML = `
+    <div style="font-size:32px;margin-bottom:8px;">
+      ${habit.icon}
+    </div>
+
+    <h2 style="margin:0 0 6px;font-size:21px;">
+      ${habit.name}
+    </h2>
+
+    <p style="margin:0 0 20px;color:#8E8E93;">
+      What would you like to do?
+    </p>
+
+    <button id="edit-choice"
+      style="
+        width:100%;
+        padding:13px;
+        border:none;
+        border-radius:12px;
+        background:#3B82F6;
+        color:white;
+        font-size:16px;
+        font-weight:600;
+        margin-bottom:10px;
+      ">
+      ✏️ Edit Habit
+    </button>
+
+    <button id="delete-choice"
+      style="
+        width:100%;
+        padding:13px;
+        border:none;
+        border-radius:12px;
+        background:#FF3B30;
+        color:white;
+        font-size:16px;
+        font-weight:600;
+        margin-bottom:10px;
+      ">
+      🗑️ Delete Habit
+    </button>
+
+    <button id="cancel-choice"
+      style="
+        width:100%;
+        padding:13px;
+        border:none;
+        border-radius:12px;
+        background:#E5E5EA;
+        color:#1C1C1E;
+        font-size:16px;
+      ">
+      Cancel
+    </button>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  document
+    .getElementById("edit-choice")
+    .addEventListener("click", () => {
+      overlay.remove();
+      showEditHabitModal(habit);
+    });
+
+  document
+    .getElementById("delete-choice")
+    .addEventListener("click", () => {
+      overlay.remove();
+      showDeleteHabitModal(habit);
+    });
+
+  document
+    .getElementById("cancel-choice")
+    .addEventListener("click", () => {
+      overlay.remove();
+    });
 }
 
 
-function editHabit(habit) {
-  const name = prompt(
-    "Habit name:",
-    habit.name
-  );
+function showEditHabitModal(habit) {
+  const overlay = document.createElement("div");
 
-  if (name === null) {
-    return;
-  }
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+  `;
 
-  const trimmedName = name.trim();
+  const modal = document.createElement("div");
 
-  if (!trimmedName) {
-    alert("Habit name cannot be empty.");
-    return;
-  }
+  modal.style.cssText = `
+    width:100%;
+    max-width:360px;
+    background:white;
+    color:#1C1C1E;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+  `;
 
-  const icon = prompt(
-    "Icon:",
-    habit.icon
-  );
+  modal.innerHTML = `
+    <h2 style="margin:0 0 20px;font-size:22px;">
+      Edit Habit
+    </h2>
 
-  if (icon === null) {
-    return;
-  }
+    <label style="display:block;margin-bottom:6px;font-weight:600;">
+      Habit name
+    </label>
 
-  const goalInput = prompt(
-    "Monthly goal:",
-    habit.monthlyGoal
-  );
+    <input id="edit-name"
+      value="${habit.name}"
+      style="
+        width:100%;
+        padding:12px;
+        border:1px solid #D1D1D6;
+        border-radius:10px;
+        font-size:16px;
+        margin-bottom:16px;
+      " />
 
-  if (goalInput === null) {
-    return;
-  }
+    <label style="display:block;margin-bottom:6px;font-weight:600;">
+      Icon
+    </label>
 
-  const goal = Number(goalInput);
+    <input id="edit-icon"
+      value="${habit.icon}"
+      maxlength="2"
+      style="
+        width:100%;
+        padding:12px;
+        border:1px solid #D1D1D6;
+        border-radius:10px;
+        font-size:20px;
+        margin-bottom:16px;
+      " />
 
-  if (!goal || goal < 1 || goal > 31) {
-    alert("Monthly goal must be between 1 and 31.");
-    return;
-  }
+    <label style="display:block;margin-bottom:6px;font-weight:600;">
+      Monthly goal
+    </label>
 
-  Storage.updateHabit(
-    habit.id,
-    {
-      name: trimmedName,
-      icon: icon.trim() || "✅",
-      monthlyGoal: goal
-    }
-  );
+    <input id="edit-goal"
+      type="number"
+      value="${habit.monthlyGoal}"
+      min="1"
+      max="31"
+      style="
+        width:100%;
+        padding:12px;
+        border:1px solid #D1D1D6;
+        border-radius:10px;
+        font-size:16px;
+        margin-bottom:20px;
+      " />
 
-  Grid.render();
+    <div style="display:flex;gap:10px;">
+      <button id="edit-cancel"
+        style="
+          flex:1;
+          padding:12px;
+          border:none;
+          border-radius:12px;
+          background:#E5E5EA;
+          font-size:16px;
+        ">
+        Cancel
+      </button>
+
+      <button id="edit-save"
+        style="
+          flex:1;
+          padding:12px;
+          border:none;
+          border-radius:12px;
+          background:#3B82F6;
+          color:white;
+          font-size:16px;
+          font-weight:600;
+        ">
+        Save
+      </button>
+    </div>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  document
+    .getElementById("edit-cancel")
+    .addEventListener("click", () => overlay.remove());
+
+  document
+    .getElementById("edit-save")
+    .addEventListener("click", () => {
+      const name = document
+        .getElementById("edit-name")
+        .value
+        .trim();
+
+      const icon =
+        document.getElementById("edit-icon").value.trim() || "✅";
+
+      const goal = Number(
+        document.getElementById("edit-goal").value
+      );
+
+      if (!name) {
+        alert("Please enter a habit name.");
+        return;
+      }
+
+      if (!goal || goal < 1 || goal > 31) {
+        alert("Monthly goal must be between 1 and 31.");
+        return;
+      }
+
+      Storage.updateHabit(habit.id, {
+        name,
+        icon,
+        monthlyGoal: goal
+      });
+
+      overlay.remove();
+      Grid.render();
+    });
 }
 
 
-function deleteHabit(habit) {
+function showDeleteHabitModal(habit) {
   const confirmed = confirm(
-    `Delete "${habit.name}"?\n\n` +
-    `This will also delete all completion records for this habit.`
+    `Delete "${habit.name}"?\n\nAll completion records for this habit will also be deleted.`
   );
 
   if (!confirmed) {
@@ -222,6 +429,5 @@ function deleteHabit(habit) {
   }
 
   Storage.deleteHabit(habit.id);
-
   Grid.render();
 }
