@@ -67,6 +67,13 @@ const Grid = {
       nameCell.innerHTML =
         `<span class="icon">${habit.icon}</span>${habit.name}`;
 
+      nameCell.style.cursor = "pointer";
+      nameCell.title = "Tap to edit or delete";
+
+      nameCell.addEventListener("click", () => {
+        showHabitOptions(habit);
+      });
+
       row.appendChild(nameCell);
 
       for (let day = 1; day <= daysCount; day++) {
@@ -77,6 +84,7 @@ const Grid = {
         );
 
         const isToday = DateHelpers.isToday(dateKey);
+
         const completed = Storage.isCompleted(
           habit.id,
           dateKey
@@ -131,3 +139,89 @@ const Grid = {
     this.render();
   }
 };
+
+
+function showHabitOptions(habit) {
+  const choice = confirm(
+    `What do you want to do with "${habit.name}"?\n\n` +
+    `OK = Edit\n` +
+    `Cancel = Delete`
+  );
+
+  if (choice) {
+    editHabit(habit);
+  } else {
+    deleteHabit(habit);
+  }
+}
+
+
+function editHabit(habit) {
+  const name = prompt(
+    "Habit name:",
+    habit.name
+  );
+
+  if (name === null) {
+    return;
+  }
+
+  const trimmedName = name.trim();
+
+  if (!trimmedName) {
+    alert("Habit name cannot be empty.");
+    return;
+  }
+
+  const icon = prompt(
+    "Icon:",
+    habit.icon
+  );
+
+  if (icon === null) {
+    return;
+  }
+
+  const goalInput = prompt(
+    "Monthly goal:",
+    habit.monthlyGoal
+  );
+
+  if (goalInput === null) {
+    return;
+  }
+
+  const goal = Number(goalInput);
+
+  if (!goal || goal < 1 || goal > 31) {
+    alert("Monthly goal must be between 1 and 31.");
+    return;
+  }
+
+  Storage.updateHabit(
+    habit.id,
+    {
+      name: trimmedName,
+      icon: icon.trim() || "✅",
+      monthlyGoal: goal
+    }
+  );
+
+  Grid.render();
+}
+
+
+function deleteHabit(habit) {
+  const confirmed = confirm(
+    `Delete "${habit.name}"?\n\n` +
+    `This will also delete all completion records for this habit.`
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  Storage.deleteHabit(habit.id);
+
+  Grid.render();
+}
