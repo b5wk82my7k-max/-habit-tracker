@@ -1,0 +1,190 @@
+:root {
+  --ios-blue: #3B82F6;
+  --ios-bg: #F2F2F7;
+  --ios-card-bg: #FFFFFF;
+  --ios-text: #1C1C1E;
+  --ios-secondary-text: #8E8E93;
+  --ios-border: #E5E5EA;
+  --ios-today-ring: #FF3B30;
+  --ios-radius: 14px;
+  --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --cell-size: 36px;
+  --habit-col-width: 120px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ios-bg: #000000;
+    --ios-card-bg: #1C1C1E;
+    --ios-text: #FFFFFF;
+    --ios-secondary-text: #98989F;
+    --ios-border: #2C2C2E;
+  }
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+  margin: 0;
+  overscroll-behavior-y: none;
+}
+
+body {
+  font-family: var(--ios-font);
+  background: var(--ios-bg);
+  color: var(--ios-text);
+  min-height: 100dvh;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 60px 12px 16px;
+  position: sticky;
+  top: 0;
+  background: var(--ios-bg);
+  z-index: 10;
+}
+
+.topbar h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.month-nav {
+  background: var(--ios-card-bg);
+  border: none;
+  color: var(--ios-blue);
+  font-size: 22px;
+  font-weight: 600;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.month-nav:active {
+  opacity: 0.6;
+}
+
+.content {
+  padding: 0 12px 100px;
+}
+
+.grid-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--ios-radius);
+  background: var(--ios-card-bg);
+}
+
+.habit-grid {
+  display: table;
+  border-collapse: collapse;
+  width: max-content;
+  min-width: 100%;
+}
+
+.grid-row {
+  display: table-row;
+}
+
+.grid-header-row {
+  display: table-row;
+  position: sticky;
+  top: 0;
+}
+
+.habit-name-cell {
+  display: table-cell;
+  position: sticky;
+  left: 0;
+  background: var(--ios-card-bg);
+  width: var(--habit-col-width);
+  min-width: var(--habit-col-width);
+  max-width: var(--habit-col-width);
+  padding: 8px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-bottom: 1px solid var(--ios-border);
+  vertical-align: middle;
+  z-index: 2;
+}
+
+.habit-name-cell .icon {
+  margin-right: 6px;
+}
+
+.day-header-cell {
+  display: table-cell;
+  width: var(--cell-size);
+  min-width: var(--cell-size);
+  text-align: center;
+  font-size: 11px;
+  color: var(--ios-secondary-text);
+  padding: 6px 2px;
+  font-weight: 600;
+  border-bottom: 1px solid var(--ios-border);
+}
+
+.day-header-cell.today {
+  color: var(--ios-today-ring);
+}
+
+.day-cell {
+  display: table-cell;
+  width: var(--cell-size);
+  min-width: var(--cell-size);
+  height: var(--cell-size);
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--ios-border);
+  padding: 0;
+}
+
+.day-cell-inner {
+  width: 26px;
+  height: 26px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background: var(--ios-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.day-cell-inner:active {
+  transform: scale(0.85);
+}
+
+.day-cell-inner.completed {
+  background: var(--habit-color, var(--ios-blue));
+}
+
+.day-cell-inner.completed::after {
+  content: "✓";
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.day-cell.is-today .day-cell-inner {
+  box-shadow: 0 0 0 2px var(--ios-today-ring);
+}
+
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--ios-secondary-text);
+  font-size: 15px;
+}
