@@ -45,16 +45,16 @@ function addHabitButton() {
   button.title = "Add Habit";
 
   button.style.cssText = `
-    background: #3B82F6;
-    color: white;
-    border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    font-size: 25px;
-    line-height: 36px;
-    font-weight: 400;
-    cursor: pointer;
+    background:#3B82F6;
+    color:white;
+    border:none;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    font-size:25px;
+    line-height:36px;
+    font-weight:400;
+    cursor:pointer;
   `;
 
   button.addEventListener("click", showAddHabitModal);
@@ -69,26 +69,26 @@ function showAddHabitModal() {
   overlay.id = "habit-modal-overlay";
 
   overlay.style.cssText = `
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    z-index: 100;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
   `;
 
   const modal = document.createElement("div");
 
   modal.style.cssText = `
-    width: 100%;
-    max-width: 360px;
-    background: white;
-    color: #1C1C1E;
-    border-radius: 20px;
-    padding: 22px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    width:100%;
+    max-width:360px;
+    background:white;
+    color:#1C1C1E;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
   `;
 
   modal.innerHTML = `
@@ -151,13 +151,12 @@ function showAddHabitModal() {
         type="color"
         value="#3B82F6"
         style="
-          width:52px;
+          width:58px;
           height:42px;
           padding:2px;
           border:1px solid #D1D1D6;
           border-radius:10px;
           background:white;
-          cursor:pointer;
         "
       />
 
@@ -240,8 +239,7 @@ function showAddHabitModal() {
     document.getElementById("habit-color-value");
 
   colorInput.addEventListener("input", () => {
-    colorValue.textContent =
-      colorInput.value.toUpperCase();
+    colorValue.textContent = colorInput.value;
   });
 
 
@@ -293,8 +291,7 @@ function showAddHabitModal() {
       }
 
 
-      const habits =
-        Storage.getHabits();
+      const habits = Storage.getHabits();
 
 
       Storage.addHabit(
@@ -317,8 +314,7 @@ function showAddHabitModal() {
 
 
 function calculateBestStreak() {
-  const completions =
-    Storage.getCompletions();
+  const completions = Storage.getCompletions();
 
   if (completions.length === 0) {
     return 0;
@@ -335,6 +331,7 @@ function calculateBestStreak() {
   let bestStreak = 1;
   let currentStreak = 1;
 
+
   for (let i = 1; i < dates.length; i++) {
 
     const previousDate =
@@ -347,13 +344,16 @@ function calculateBestStreak() {
         dates[i] + "T00:00:00"
       );
 
+
     const difference =
       (currentDate - previousDate) /
       (1000 * 60 * 60 * 24);
 
+
     if (difference === 1) {
 
       currentStreak++;
+
 
       if (currentStreak > bestStreak) {
         bestStreak = currentStreak;
@@ -362,8 +362,10 @@ function calculateBestStreak() {
     } else {
 
       currentStreak = 1;
+
     }
   }
+
 
   return bestStreak;
 }
@@ -377,14 +379,17 @@ function updateDashboard() {
   const completions =
     Storage.getCompletions();
 
+
   const year =
     Grid.currentYear;
 
   const month =
     Grid.currentMonth;
 
+
   const monthPrefix =
     `${year}-${String(month).padStart(2, "0")}`;
+
 
   const monthCompletions =
     completions.filter(
@@ -394,8 +399,10 @@ function updateDashboard() {
         )
     );
 
+
   const totalCompletions =
     monthCompletions.length;
+
 
   const daysInMonth =
     DateHelpers.daysInMonth(
@@ -403,8 +410,10 @@ function updateDashboard() {
       month
     );
 
+
   const possibleCompletions =
     habits.length * daysInMonth;
+
 
   const overallPercent =
     possibleCompletions > 0
@@ -414,6 +423,7 @@ function updateDashboard() {
             100
         )
       : 0;
+
 
   const bestStreak =
     calculateBestStreak();
@@ -471,25 +481,29 @@ function updateDashboard() {
     const habitCompletions =
       monthCompletions.filter(
         completion =>
-          completion.habitId === habit.id
+          completion.habitId ===
+          habit.id
       ).length;
+
 
     const goal =
       habit.monthlyGoal ||
       daysInMonth;
+
 
     const percent =
       Math.min(
         100,
         Math.round(
           (habitCompletions / goal) *
-          100
+            100
         )
       );
 
 
     const card =
       document.createElement("div");
+
 
     card.className =
       "progress-card";
