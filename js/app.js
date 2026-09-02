@@ -136,6 +136,44 @@ function showAddHabitModal() {
     />
 
     <label style="display:block;margin-bottom:6px;font-weight:600;">
+      Color
+    </label>
+
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    ">
+
+      <input
+        id="habit-color-input"
+        type="color"
+        value="#3B82F6"
+        style="
+          width:52px;
+          height:42px;
+          padding:2px;
+          border:1px solid #D1D1D6;
+          border-radius:10px;
+          background:white;
+          cursor:pointer;
+        "
+      />
+
+      <span
+        id="habit-color-value"
+        style="
+          font-size:15px;
+          color:#8E8E93;
+        "
+      >
+        #3B82F6
+      </span>
+
+    </div>
+
+    <label style="display:block;margin-bottom:6px;font-weight:600;">
       Monthly goal
     </label>
 
@@ -194,20 +232,35 @@ function showAddHabitModal() {
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
+
+  const colorInput =
+    document.getElementById("habit-color-input");
+
+  const colorValue =
+    document.getElementById("habit-color-value");
+
+  colorInput.addEventListener("input", () => {
+    colorValue.textContent =
+      colorInput.value.toUpperCase();
+  });
+
+
   document
     .getElementById("cancel-habit-button")
     .addEventListener("click", () => {
       overlay.remove();
     });
 
+
   document
     .getElementById("save-habit-button")
     .addEventListener("click", () => {
 
-      const name = document
-        .getElementById("habit-name-input")
-        .value
-        .trim();
+      const name =
+        document
+          .getElementById("habit-name-input")
+          .value
+          .trim();
 
       const icon =
         document
@@ -215,33 +268,45 @@ function showAddHabitModal() {
           .value
           .trim() || "✅";
 
-      const goal = Number(
+      const color =
         document
-          .getElementById("habit-goal-input")
-          .value
-      );
+          .getElementById("habit-color-input")
+          .value;
+
+      const goal =
+        Number(
+          document
+            .getElementById("habit-goal-input")
+            .value
+        );
+
 
       if (!name) {
         alert("Please enter a habit name.");
         return;
       }
 
+
       if (!goal || goal < 1 || goal > 31) {
         alert("Monthly goal must be between 1 and 31.");
         return;
       }
 
-      const habits = Storage.getHabits();
+
+      const habits =
+        Storage.getHabits();
+
 
       Storage.addHabit(
         Models.createHabit({
           name,
           icon,
-          color: "#3B82F6",
+          color,
           monthlyGoal: goal,
           sortOrder: habits.length
         })
       );
+
 
       overlay.remove();
 
@@ -252,7 +317,8 @@ function showAddHabitModal() {
 
 
 function calculateBestStreak() {
-  const completions = Storage.getCompletions();
+  const completions =
+    Storage.getCompletions();
 
   if (completions.length === 0) {
     return 0;
@@ -260,7 +326,9 @@ function calculateBestStreak() {
 
   const dates = [
     ...new Set(
-      completions.map(completion => completion.dateKey)
+      completions.map(
+        completion => completion.dateKey
+      )
     )
   ].sort();
 
@@ -268,25 +336,31 @@ function calculateBestStreak() {
   let currentStreak = 1;
 
   for (let i = 1; i < dates.length; i++) {
-    const previousDate = new Date(
-      dates[i - 1] + "T00:00:00"
-    );
 
-    const currentDate = new Date(
-      dates[i] + "T00:00:00"
-    );
+    const previousDate =
+      new Date(
+        dates[i - 1] + "T00:00:00"
+      );
+
+    const currentDate =
+      new Date(
+        dates[i] + "T00:00:00"
+      );
 
     const difference =
       (currentDate - previousDate) /
       (1000 * 60 * 60 * 24);
 
     if (difference === 1) {
+
       currentStreak++;
 
       if (currentStreak > bestStreak) {
         bestStreak = currentStreak;
       }
+
     } else {
+
       currentStreak = 1;
     }
   }
@@ -296,25 +370,38 @@ function calculateBestStreak() {
 
 
 function updateDashboard() {
-  const habits = Storage.getHabits();
-  const completions = Storage.getCompletions();
 
-  const year = Grid.currentYear;
-  const month = Grid.currentMonth;
+  const habits =
+    Storage.getHabits();
+
+  const completions =
+    Storage.getCompletions();
+
+  const year =
+    Grid.currentYear;
+
+  const month =
+    Grid.currentMonth;
 
   const monthPrefix =
     `${year}-${String(month).padStart(2, "0")}`;
 
-  const monthCompletions = completions.filter(
-    completion =>
-      completion.dateKey.startsWith(monthPrefix)
-  );
+  const monthCompletions =
+    completions.filter(
+      completion =>
+        completion.dateKey.startsWith(
+          monthPrefix
+        )
+    );
 
   const totalCompletions =
     monthCompletions.length;
 
   const daysInMonth =
-    DateHelpers.daysInMonth(year, month);
+    DateHelpers.daysInMonth(
+      year,
+      month
+    );
 
   const possibleCompletions =
     habits.length * daysInMonth;
@@ -331,38 +418,53 @@ function updateDashboard() {
   const bestStreak =
     calculateBestStreak();
 
+
   const percentElement =
-    document.getElementById("overall-percent");
+    document.getElementById(
+      "overall-percent"
+    );
 
   const totalElement =
-    document.getElementById("total-completions");
+    document.getElementById(
+      "total-completions"
+    );
 
   const streakElement =
-    document.getElementById("best-streak");
+    document.getElementById(
+      "best-streak"
+    );
 
   const progressContainer =
-    document.getElementById("habit-progress");
+    document.getElementById(
+      "habit-progress"
+    );
+
 
   if (percentElement) {
     percentElement.textContent =
       `${overallPercent}%`;
   }
 
+
   if (totalElement) {
     totalElement.textContent =
       totalCompletions;
   }
+
 
   if (streakElement) {
     streakElement.textContent =
       `${bestStreak} 🔥`;
   }
 
+
   if (!progressContainer) {
     return;
   }
 
+
   progressContainer.innerHTML = "";
+
 
   habits.forEach(habit => {
 
@@ -373,21 +475,25 @@ function updateDashboard() {
       ).length;
 
     const goal =
-      habit.monthlyGoal || daysInMonth;
+      habit.monthlyGoal ||
+      daysInMonth;
 
     const percent =
       Math.min(
         100,
         Math.round(
-          (habitCompletions / goal) * 100
+          (habitCompletions / goal) *
+          100
         )
       );
+
 
     const card =
       document.createElement("div");
 
     card.className =
       "progress-card";
+
 
     card.innerHTML = `
       <div class="progress-header">
@@ -426,6 +532,7 @@ function updateDashboard() {
       </div>
     `;
 
+
     progressContainer.appendChild(card);
   });
 }
@@ -434,16 +541,20 @@ function updateDashboard() {
 document
   .getElementById("prev-month")
   .addEventListener("click", () => {
+
     Grid.goToPrevMonth();
     updateDashboard();
+
   });
 
 
 document
   .getElementById("next-month")
   .addEventListener("click", () => {
+
     Grid.goToNextMonth();
     updateDashboard();
+
   });
 
 
