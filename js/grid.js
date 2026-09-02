@@ -13,6 +13,11 @@ const Grid = {
     if (habits.length === 0) {
       gridEl.innerHTML =
         `<div class="empty-state">No habits yet. Add one to get started!</div>`;
+
+      if (typeof updateDashboard === "function") {
+        updateDashboard();
+      }
+
       return;
     }
 
@@ -37,6 +42,7 @@ const Grid = {
       );
 
       const cell = document.createElement("div");
+
       cell.className =
         "day-header-cell" +
         (DateHelpers.isToday(dateKey) ? " today" : "");
@@ -65,18 +71,23 @@ const Grid = {
       nameCell.className = "habit-name-cell";
 
       const nameWrapper = document.createElement("div");
+
       nameWrapper.style.cssText =
         "display:flex;align-items:center;gap:6px;";
 
       const nameText = document.createElement("span");
+
       nameText.style.cssText =
         "overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;";
+
       nameText.innerHTML =
         `<span class="icon">${habit.icon}</span>${habit.name}`;
 
       const editButton = document.createElement("button");
+
       editButton.textContent = "✏️";
       editButton.title = "Edit habit";
+
       editButton.style.cssText = `
         border:none;
         background:transparent;
@@ -104,11 +115,13 @@ const Grid = {
         );
 
         const cell = document.createElement("div");
+
         cell.className =
           "day-cell" +
           (DateHelpers.isToday(dateKey) ? " is-today" : "");
 
         const inner = document.createElement("div");
+
         inner.className =
           "day-cell-inner" +
           (Storage.isCompleted(habit.id, dateKey)
@@ -121,8 +134,16 @@ const Grid = {
         );
 
         inner.addEventListener("click", () => {
-          Storage.toggleCompletion(habit.id, dateKey);
+          Storage.toggleCompletion(
+            habit.id,
+            dateKey
+          );
+
           this.render();
+
+          if (typeof updateDashboard === "function") {
+            updateDashboard();
+          }
         });
 
         cell.appendChild(inner);
@@ -131,6 +152,10 @@ const Grid = {
 
       gridEl.appendChild(row);
     });
+
+    if (typeof updateDashboard === "function") {
+      updateDashboard();
+    }
   },
 
   goToPrevMonth() {
@@ -347,6 +372,7 @@ function showEditHabitModal(habit) {
       " />
 
     <div style="display:flex;gap:10px;">
+
       <button id="edit-cancel"
         style="
           flex:1;
@@ -372,6 +398,7 @@ function showEditHabitModal(habit) {
         ">
         Save
       </button>
+
     </div>
   `;
 
@@ -380,21 +407,29 @@ function showEditHabitModal(habit) {
 
   document
     .getElementById("edit-cancel")
-    .addEventListener("click", () => overlay.remove());
+    .addEventListener("click", () => {
+      overlay.remove();
+    });
 
   document
     .getElementById("edit-save")
     .addEventListener("click", () => {
+
       const name = document
         .getElementById("edit-name")
         .value
         .trim();
 
       const icon =
-        document.getElementById("edit-icon").value.trim() || "✅";
+        document
+          .getElementById("edit-icon")
+          .value
+          .trim() || "✅";
 
       const goal = Number(
-        document.getElementById("edit-goal").value
+        document
+          .getElementById("edit-goal")
+          .value
       );
 
       if (!name) {
@@ -403,7 +438,9 @@ function showEditHabitModal(habit) {
       }
 
       if (!goal || goal < 1 || goal > 31) {
-        alert("Monthly goal must be between 1 and 31.");
+        alert(
+          "Monthly goal must be between 1 and 31."
+        );
         return;
       }
 
@@ -414,7 +451,12 @@ function showEditHabitModal(habit) {
       });
 
       overlay.remove();
+
       Grid.render();
+
+      if (typeof updateDashboard === "function") {
+        updateDashboard();
+      }
     });
 }
 
@@ -429,5 +471,10 @@ function showDeleteHabitModal(habit) {
   }
 
   Storage.deleteHabit(habit.id);
+
   Grid.render();
+
+  if (typeof updateDashboard === "function") {
+    updateDashboard();
+  }
 }
