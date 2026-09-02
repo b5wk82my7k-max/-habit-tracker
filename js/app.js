@@ -234,11 +234,11 @@ document
   .getElementById("next-month")
   .addEventListener("click", () => Grid.goToNextMonth());
 
-seedTestHabitsIfEmpty();
+function updateDashboard() {
+  seedTestHabitsIfEmpty();
 addHabitButton();
 Grid.render();
 updateDashboard();
-function updateDashboard() {
   const habits = Storage.getHabits();
   const completions = Storage.getCompletions();
 
