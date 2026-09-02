@@ -13,11 +13,6 @@ const Grid = {
     if (habits.length === 0) {
       gridEl.innerHTML =
         `<div class="empty-state">No habits yet. Add one to get started!</div>`;
-
-      if (typeof updateDashboard === "function") {
-        updateDashboard();
-      }
-
       return;
     }
 
@@ -134,16 +129,10 @@ const Grid = {
         );
 
         inner.addEventListener("click", () => {
-          Storage.toggleCompletion(
-            habit.id,
-            dateKey
-          );
+          Storage.toggleCompletion(habit.id, dateKey);
 
           this.render();
-
-          if (typeof updateDashboard === "function") {
-            updateDashboard();
-          }
+          updateDashboard();
         });
 
         cell.appendChild(inner);
@@ -152,10 +141,6 @@ const Grid = {
 
       gridEl.appendChild(row);
     });
-
-    if (typeof updateDashboard === "function") {
-      updateDashboard();
-    }
   },
 
   goToPrevMonth() {
@@ -167,6 +152,7 @@ const Grid = {
     }
 
     this.render();
+    updateDashboard();
   },
 
   goToNextMonth() {
@@ -178,6 +164,7 @@ const Grid = {
     }
 
     this.render();
+    updateDashboard();
   }
 };
 
@@ -407,9 +394,7 @@ function showEditHabitModal(habit) {
 
   document
     .getElementById("edit-cancel")
-    .addEventListener("click", () => {
-      overlay.remove();
-    });
+    .addEventListener("click", () => overlay.remove());
 
   document
     .getElementById("edit-save")
@@ -427,9 +412,7 @@ function showEditHabitModal(habit) {
           .trim() || "✅";
 
       const goal = Number(
-        document
-          .getElementById("edit-goal")
-          .value
+        document.getElementById("edit-goal").value
       );
 
       if (!name) {
@@ -438,9 +421,7 @@ function showEditHabitModal(habit) {
       }
 
       if (!goal || goal < 1 || goal > 31) {
-        alert(
-          "Monthly goal must be between 1 and 31."
-        );
+        alert("Monthly goal must be between 1 and 31.");
         return;
       }
 
@@ -453,10 +434,7 @@ function showEditHabitModal(habit) {
       overlay.remove();
 
       Grid.render();
-
-      if (typeof updateDashboard === "function") {
-        updateDashboard();
-      }
+      updateDashboard();
     });
 }
 
@@ -473,8 +451,5 @@ function showDeleteHabitModal(habit) {
   Storage.deleteHabit(habit.id);
 
   Grid.render();
-
-  if (typeof updateDashboard === "function") {
-    updateDashboard();
-  }
+  updateDashboard();
 }
