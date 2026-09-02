@@ -237,3 +237,94 @@ document
 seedTestHabitsIfEmpty();
 addHabitButton();
 Grid.render();
+updateDashboard();
+function updateDashboard() {
+  const habits = Storage.getHabits();
+  const completions = Storage.getCompletions();
+
+  const year = Grid.currentYear;
+  const month = Grid.currentMonth;
+
+  const monthPrefix =
+    `${year}-${String(month).padStart(2, "0")}`;
+
+  const monthCompletions = completions.filter(
+    completion => completion.dateKey.startsWith(monthPrefix)
+  );
+
+  const totalCompletions = monthCompletions.length;
+
+  const daysInMonth =
+    DateHelpers.daysInMonth(year, month);
+
+  const possibleCompletions =
+    habits.length * daysInMonth;
+
+  const overallPercent =
+    possibleCompletions > 0
+      ? Math.round(
+          (totalCompletions / possibleCompletions) * 100
+        )
+      : 0;
+
+  document.getElementById("overall-percent").textContent =
+    `${overallPercent}%`;
+
+  document.getElementById("total-completions").textContent =
+    totalCompletions;
+
+  const progressContainer =
+    document.getElementById("habit-progress");
+
+  progressContainer.innerHTML = "";
+
+  habits.forEach(habit => {
+    const habitCompletions = monthCompletions.filter(
+      completion => completion.habitId === habit.id
+    ).length;
+
+    const goal = habit.monthlyGoal || daysInMonth;
+
+    const percent = Math.min(
+      100,
+      Math.round((habitCompletions / goal) * 100)
+    );
+
+    const card = document.createElement("div");
+    card.className = "progress-card";
+
+    card.innerHTML = `
+      <div class="progress-header">
+
+        <div class="progress-name">
+          <span>${habit.icon}</span>
+          <span>${habit.name}</span>
+        </div>
+
+        <div class="progress-number">
+          ${habitCompletions}/${goal}
+        </div>
+
+      </div>
+
+      <div class="progress-track">
+        <div
+          class="progress-fill"
+          style="
+            width:${percent}%;
+            background:${habit.color};
+          "
+        ></div>
+      </div>
+
+      <div class="progress-footer">
+        <span>Monthly goal</span>
+        <span class="progress-percent">
+          ${percent}%
+        </span>
+      </div>
+    `;
+
+    progressContainer.appendChild(card);
+  });
+}
