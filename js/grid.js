@@ -125,7 +125,7 @@ const Grid = {
 
         inner.style.setProperty(
           "--habit-color",
-          habit.color
+          habit.color || "#3B82F6"
         );
 
         inner.addEventListener("click", () => {
@@ -304,6 +304,9 @@ function showEditHabitModal(habit) {
     box-shadow:0 15px 40px rgba(0,0,0,0.25);
   `;
 
+  const currentColor =
+    habit.color || "#3B82F6";
+
   modal.innerHTML = `
     <h2 style="margin:0 0 20px;font-size:22px;">
       Edit Habit
@@ -313,7 +316,8 @@ function showEditHabitModal(habit) {
       Habit name
     </label>
 
-    <input id="edit-name"
+    <input
+      id="edit-name"
       value="${habit.name}"
       style="
         width:100%;
@@ -322,13 +326,16 @@ function showEditHabitModal(habit) {
         border-radius:10px;
         font-size:16px;
         margin-bottom:16px;
-      " />
+        box-sizing:border-box;
+      "
+    />
 
     <label style="display:block;margin-bottom:6px;font-weight:600;">
       Icon
     </label>
 
-    <input id="edit-icon"
+    <input
+      id="edit-icon"
       value="${habit.icon}"
       maxlength="2"
       style="
@@ -338,13 +345,53 @@ function showEditHabitModal(habit) {
         border-radius:10px;
         font-size:20px;
         margin-bottom:16px;
-      " />
+        box-sizing:border-box;
+      "
+    />
+
+    <label style="display:block;margin-bottom:6px;font-weight:600;">
+      Color
+    </label>
+
+    <div style="
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:16px;
+    ">
+
+      <input
+        id="edit-color"
+        type="color"
+        value="${currentColor}"
+        style="
+          width:58px;
+          height:42px;
+          padding:2px;
+          border:1px solid #D1D1D6;
+          border-radius:10px;
+          background:white;
+        "
+      />
+
+      <span
+        id="edit-color-value"
+        style="
+          font-size:15px;
+          color:#8E8E93;
+        "
+      >
+        ${currentColor}
+      </span>
+
+    </div>
 
     <label style="display:block;margin-bottom:6px;font-weight:600;">
       Monthly goal
     </label>
 
-    <input id="edit-goal"
+    <input
+      id="edit-goal"
       type="number"
       value="${habit.monthlyGoal}"
       min="1"
@@ -356,11 +403,14 @@ function showEditHabitModal(habit) {
         border-radius:10px;
         font-size:16px;
         margin-bottom:20px;
-      " />
+        box-sizing:border-box;
+      "
+    />
 
     <div style="display:flex;gap:10px;">
 
-      <button id="edit-cancel"
+      <button
+        id="edit-cancel"
         style="
           flex:1;
           padding:12px;
@@ -368,11 +418,13 @@ function showEditHabitModal(habit) {
           border-radius:12px;
           background:#E5E5EA;
           font-size:16px;
-        ">
+        "
+      >
         Cancel
       </button>
 
-      <button id="edit-save"
+      <button
+        id="edit-save"
         style="
           flex:1;
           padding:12px;
@@ -382,7 +434,8 @@ function showEditHabitModal(habit) {
           color:white;
           font-size:16px;
           font-weight:600;
-        ">
+        "
+      >
         Save
       </button>
 
@@ -392,18 +445,35 @@ function showEditHabitModal(habit) {
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
+
+  const colorInput =
+    document.getElementById("edit-color");
+
+  const colorValue =
+    document.getElementById("edit-color-value");
+
+  colorInput.addEventListener("input", () => {
+    colorValue.textContent =
+      colorInput.value;
+  });
+
+
   document
     .getElementById("edit-cancel")
-    .addEventListener("click", () => overlay.remove());
+    .addEventListener("click", () => {
+      overlay.remove();
+    });
+
 
   document
     .getElementById("edit-save")
     .addEventListener("click", () => {
 
-      const name = document
-        .getElementById("edit-name")
-        .value
-        .trim();
+      const name =
+        document
+          .getElementById("edit-name")
+          .value
+          .trim();
 
       const icon =
         document
@@ -411,25 +481,40 @@ function showEditHabitModal(habit) {
           .value
           .trim() || "✅";
 
-      const goal = Number(
-        document.getElementById("edit-goal").value
-      );
+      const color =
+        document
+          .getElementById("edit-color")
+          .value;
+
+      const goal =
+        Number(
+          document
+            .getElementById("edit-goal")
+            .value
+        );
+
 
       if (!name) {
         alert("Please enter a habit name.");
         return;
       }
 
+
       if (!goal || goal < 1 || goal > 31) {
-        alert("Monthly goal must be between 1 and 31.");
+        alert(
+          "Monthly goal must be between 1 and 31."
+        );
         return;
       }
+
 
       Storage.updateHabit(habit.id, {
         name,
         icon,
+        color,
         monthlyGoal: goal
       });
+
 
       overlay.remove();
 
