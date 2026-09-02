@@ -15,10 +15,41 @@
     </header>
 
     <main class="content">
-      <div class="grid-scroll-wrapper">
-        <div id="grid" class="habit-grid"></div>
+
+  <!-- Dashboard -->
+  <section id="dashboard" class="dashboard">
+
+    <div class="stats-card">
+      <div class="stat">
+        <span id="overall-percent">0%</span>
+        <small>Monthly</small>
       </div>
-    </main>
+
+      <div class="stat">
+        <span id="total-completions">0</span>
+        <small>Completions</small>
+      </div>
+
+      <div class="stat">
+        <span id="best-streak">0 🔥</span>
+        <small>Best Streak</small>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <h2>Habit Progress</h2>
+    </div>
+
+    <div id="habit-progress"></div>
+
+  </section>
+
+  <!-- Monthly Grid -->
+  <div class="grid-scroll-wrapper">
+    <div id="grid" class="habit-grid"></div>
+  </div>
+
+</main>
   </div>
 
   <script src="js/dateHelpers.js"></script>
