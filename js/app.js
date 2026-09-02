@@ -47,124 +47,56 @@ function seedTestHabitsIfEmpty() {
 
 
 /* =========================================================
-   ADD HABIT BUTTON
+   CONNECT TOP BAR BUTTONS
 ========================================================= */
 
-function addHabitButton() {
+function setupTopbarButtons() {
 
-  const topbar = document.querySelector(".topbar");
+  const statsButton =
+    document.getElementById("stats-button");
 
-  if (!topbar) return;
+  const settingsButton =
+    document.getElementById("settings-button");
 
-  if (document.getElementById("add-habit-button")) return;
-
-  const button = document.createElement("button");
-
-  button.id = "add-habit-button";
-  button.textContent = "+";
-  button.title = "Add Habit";
-
-  button.style.cssText = `
-    background:#3B82F6;
-    color:white;
-    border:none;
-    width:36px;
-    height:36px;
-    min-width:36px;
-    border-radius:50%;
-    font-size:25px;
-    line-height:36px;
-    font-weight:400;
-    cursor:pointer;
-    margin-left:8px;
-  `;
-
-  button.addEventListener(
-    "click",
-    showAddHabitModal
-  );
-
-  topbar.appendChild(button);
-}
+  const addHabitButton =
+    document.getElementById("add-habit-button");
 
 
-/* =========================================================
-   STATS BUTTON
-========================================================= */
+  /* Statistics */
 
-function addStatsButton() {
+  if (statsButton) {
 
-  const topbar = document.querySelector(".topbar");
+    statsButton.addEventListener(
+      "click",
+      showStatsModal
+    );
 
-  if (!topbar) return;
-
-  if (document.getElementById("stats-button")) return;
-
-  const button = document.createElement("button");
-
-  button.id = "stats-button";
-  button.textContent = "📊";
-  button.title = "Statistics";
-
-  button.style.cssText = `
-    background:white;
-    color:#3B82F6;
-    border:1px solid #D1D1D6;
-    width:36px;
-    height:36px;
-    min-width:36px;
-    border-radius:50%;
-    font-size:17px;
-    cursor:pointer;
-    margin-left:8px;
-  `;
-
-  button.addEventListener(
-    "click",
-    showStatsModal
-  );
-
-  topbar.appendChild(button);
-}
+  }
 
 
-/* =========================================================
-   SETTINGS BUTTON
-========================================================= */
+  /* Settings */
 
-function addSettingsButton() {
+  if (settingsButton) {
 
-  const topbar = document.querySelector(".topbar");
+    settingsButton.addEventListener(
+      "click",
+      showSettingsModal
+    );
 
-  if (!topbar) return;
+  }
 
-  if (document.getElementById("settings-button")) return;
 
-  const button = document.createElement("button");
+  /* Add habit */
 
-  button.id = "settings-button";
-  button.textContent = "⚙️";
-  button.title = "Settings";
+  if (addHabitButton) {
 
-  button.style.cssText = `
-    background:white;
-    color:#1C1C1E;
-    border:1px solid #D1D1D6;
-    width:36px;
-    height:36px;
-    min-width:36px;
-    border-radius:50%;
-    font-size:17px;
-    cursor:pointer;
-    margin-left:8px;
-  `;
+    addHabitButton.addEventListener(
+      "click",
+      showAddHabitModal
+    );
 
-  button.addEventListener(
-    "click",
-    showSettingsModal
-  );
+  }
 
-  topbar.appendChild(button);
 }
 
 
@@ -174,9 +106,11 @@ function addSettingsButton() {
 
 function showAddHabitModal() {
 
-  const overlay = document.createElement("div");
+  const overlay =
+    document.createElement("div");
 
-  overlay.id = "habit-modal-overlay";
+  overlay.id =
+    "habit-modal-overlay";
 
   overlay.style.cssText = `
     position:fixed;
@@ -187,13 +121,18 @@ function showAddHabitModal() {
     justify-content:center;
     padding:20px;
     z-index:1000;
+    box-sizing:border-box;
   `;
 
-  const modal = document.createElement("div");
+
+  const modal =
+    document.createElement("div");
 
   modal.style.cssText = `
     width:100%;
     max-width:360px;
+    max-height:90vh;
+    overflow-y:auto;
     background:white;
     color:#1C1C1E;
     border-radius:20px;
@@ -201,6 +140,7 @@ function showAddHabitModal() {
     box-shadow:0 15px 40px rgba(0,0,0,0.25);
     box-sizing:border-box;
   `;
+
 
   modal.innerHTML = `
 
@@ -211,6 +151,7 @@ function showAddHabitModal() {
       Add Habit
     </h2>
 
+
     <label style="
       display:block;
       margin-bottom:6px;
@@ -218,6 +159,7 @@ function showAddHabitModal() {
     ">
       Habit name
     </label>
+
 
     <input
       id="habit-name-input"
@@ -234,6 +176,7 @@ function showAddHabitModal() {
       "
     />
 
+
     <label style="
       display:block;
       margin-bottom:6px;
@@ -241,6 +184,7 @@ function showAddHabitModal() {
     ">
       Icon
     </label>
+
 
     <input
       id="habit-icon-input"
@@ -258,6 +202,7 @@ function showAddHabitModal() {
       "
     />
 
+
     <label style="
       display:block;
       margin-bottom:6px;
@@ -265,6 +210,7 @@ function showAddHabitModal() {
     ">
       Color
     </label>
+
 
     <div style="
       display:flex;
@@ -287,6 +233,7 @@ function showAddHabitModal() {
         "
       />
 
+
       <span
         id="habit-color-value"
         style="
@@ -299,6 +246,7 @@ function showAddHabitModal() {
 
     </div>
 
+
     <label style="
       display:block;
       margin-bottom:6px;
@@ -306,6 +254,7 @@ function showAddHabitModal() {
     ">
       Monthly goal
     </label>
+
 
     <input
       id="habit-goal-input"
@@ -324,6 +273,7 @@ function showAddHabitModal() {
       "
     />
 
+
     <div style="
       display:flex;
       gap:10px;
@@ -331,6 +281,7 @@ function showAddHabitModal() {
 
       <button
         id="cancel-habit-button"
+        type="button"
         style="
           flex:1;
           padding:12px;
@@ -343,8 +294,10 @@ function showAddHabitModal() {
         Cancel
       </button>
 
+
       <button
         id="save-habit-button"
+        type="button"
         style="
           flex:1;
           padding:12px;
@@ -362,9 +315,13 @@ function showAddHabitModal() {
     </div>
   `;
 
+
   overlay.appendChild(modal);
+
   document.body.appendChild(overlay);
 
+
+  /* Color */
 
   const colorInput =
     document.getElementById(
@@ -380,19 +337,29 @@ function showAddHabitModal() {
   colorInput.addEventListener(
     "input",
     () => {
+
       colorValue.textContent =
         colorInput.value;
+
     }
   );
 
+
+  /* Cancel */
 
   document
     .getElementById("cancel-habit-button")
     .addEventListener(
       "click",
-      () => overlay.remove()
+      () => {
+
+        overlay.remove();
+
+      }
     );
 
+
+  /* Save */
 
   document
     .getElementById("save-habit-button")
@@ -402,34 +369,48 @@ function showAddHabitModal() {
 
         const name =
           document
-            .getElementById("habit-name-input")
+            .getElementById(
+              "habit-name-input"
+            )
             .value
             .trim();
 
+
         const icon =
           document
-            .getElementById("habit-icon-input")
+            .getElementById(
+              "habit-icon-input"
+            )
             .value
             .trim() || "✅";
 
+
         const color =
           document
-            .getElementById("habit-color-input")
+            .getElementById(
+              "habit-color-input"
+            )
             .value;
+
 
         const goal =
           Number(
             document
-              .getElementById("habit-goal-input")
+              .getElementById(
+                "habit-goal-input"
+              )
               .value
           );
 
 
         if (!name) {
+
           alert(
             "Please enter a habit name."
           );
+
           return;
+
         }
 
 
@@ -438,10 +419,13 @@ function showAddHabitModal() {
           goal < 1 ||
           goal > 31
         ) {
+
           alert(
             "Monthly goal must be between 1 and 31."
           );
+
           return;
+
         }
 
 
@@ -462,23 +446,30 @@ function showAddHabitModal() {
 
         overlay.remove();
 
+
         Grid.render();
 
         updateDashboard();
+
       }
     );
 
+
+  /* Close by tapping outside */
 
   overlay.addEventListener(
     "click",
     event => {
 
       if (event.target === overlay) {
+
         overlay.remove();
+
       }
 
     }
   );
+
 }
 
 
@@ -514,6 +505,7 @@ function calculateHabitBestStreak(
 
 
   let bestStreak = 1;
+
   let currentStreak = 1;
 
 
@@ -528,6 +520,7 @@ function calculateHabitBestStreak(
         dates[i - 1] +
         "T00:00:00"
       );
+
 
     const currentDate =
       new Date(
@@ -553,8 +546,10 @@ function calculateHabitBestStreak(
         currentStreak >
         bestStreak
       ) {
+
         bestStreak =
           currentStreak;
+
       }
 
     } else {
@@ -562,6 +557,7 @@ function calculateHabitBestStreak(
       currentStreak = 1;
 
     }
+
   }
 
 
@@ -615,6 +611,7 @@ function calculateHabitCurrentStreak(
         "T00:00:00"
       );
 
+
     const previousDate =
       new Date(
         dates[i + 1] +
@@ -639,6 +636,7 @@ function calculateHabitCurrentStreak(
       break;
 
     }
+
   }
 
 
@@ -811,11 +809,16 @@ function showStatsModal() {
             font-weight:600;
           ">
 
-            <span>${habit.icon}</span>
+            <span>
+              ${habit.icon}
+            </span>
 
-            <span>${habit.name}</span>
+            <span>
+              ${habit.name}
+            </span>
 
           </div>
+
 
           <span style="
             font-weight:600;
@@ -931,8 +934,10 @@ function showStatsModal() {
         📊 Statistics
       </h2>
 
+
       <button
         id="close-stats-button"
+        type="button"
         style="
           border:none;
           background:#E5E5EA;
@@ -1013,11 +1018,13 @@ function showStatsModal() {
       Habit Statistics
     </h3>
 
+
     ${habitStatsHTML}
 
 
     <button
       id="stats-done-button"
+      type="button"
       style="
         width:100%;
         padding:13px;
@@ -1038,9 +1045,7 @@ function showStatsModal() {
 
   overlay.appendChild(modal);
 
-  document.body.appendChild(
-    overlay
-  );
+  document.body.appendChild(overlay);
 
 
   document
@@ -1068,11 +1073,14 @@ function showStatsModal() {
     event => {
 
       if (event.target === overlay) {
+
         overlay.remove();
+
       }
 
     }
   );
+
 }
 
 
@@ -1109,7 +1117,9 @@ function showSettingsModal() {
 
   modal.style.cssText = `
     width:100%;
-    max-width:360px;
+    max-width:370px;
+    max-height:85vh;
+    overflow-y:auto;
     background:white;
     color:#1C1C1E;
     border-radius:20px;
@@ -1120,6 +1130,8 @@ function showSettingsModal() {
 
 
   modal.innerHTML = `
+
+    <!-- Header -->
 
     <div style="
       display:flex;
@@ -1138,6 +1150,7 @@ function showSettingsModal() {
 
       <button
         id="close-settings"
+        type="button"
         style="
           border:none;
           background:#E5E5EA;
@@ -1153,6 +1166,8 @@ function showSettingsModal() {
 
     </div>
 
+
+    <!-- App information -->
 
     <div style="
       background:#F2F2F7;
@@ -1172,6 +1187,7 @@ function showSettingsModal() {
       <div style="
         color:#8E8E93;
         font-size:14px;
+        line-height:1.4;
       ">
         Manage your habits and progress.
       </div>
@@ -1179,8 +1195,41 @@ function showSettingsModal() {
     </div>
 
 
+    <!-- Habit count -->
+
+    <div style="
+      background:#F2F2F7;
+      border-radius:14px;
+      padding:15px;
+      margin-bottom:12px;
+    ">
+
+      <div style="
+        font-size:16px;
+        font-weight:600;
+        margin-bottom:5px;
+      ">
+        Your Habits
+      </div>
+
+      <div
+        id="settings-habit-count"
+        style="
+          color:#8E8E93;
+          font-size:14px;
+        "
+      >
+        ${Storage.getHabits().length} habits
+      </div>
+
+    </div>
+
+
+    <!-- Reset -->
+
     <button
       id="reset-data-button"
+      type="button"
       style="
         width:100%;
         padding:13px;
@@ -1191,14 +1240,18 @@ function showSettingsModal() {
         font-size:16px;
         font-weight:600;
         margin-bottom:10px;
+        cursor:pointer;
       "
     >
       Reset All Data
     </button>
 
 
+    <!-- Done -->
+
     <button
       id="settings-close-button"
+      type="button"
       style="
         width:100%;
         padding:13px;
@@ -1208,6 +1261,7 @@ function showSettingsModal() {
         color:white;
         font-size:16px;
         font-weight:600;
+        cursor:pointer;
       "
     >
       Done
@@ -1218,10 +1272,10 @@ function showSettingsModal() {
 
   overlay.appendChild(modal);
 
-  document.body.appendChild(
-    overlay
-  );
+  document.body.appendChild(overlay);
 
+
+  /* Close X */
 
   document
     .getElementById(
@@ -1229,9 +1283,15 @@ function showSettingsModal() {
     )
     .addEventListener(
       "click",
-      () => overlay.remove()
+      () => {
+
+        overlay.remove();
+
+      }
     );
 
+
+  /* Done */
 
   document
     .getElementById(
@@ -1239,9 +1299,15 @@ function showSettingsModal() {
     )
     .addEventListener(
       "click",
-      () => overlay.remove()
+      () => {
+
+        overlay.remove();
+
+      }
     );
 
+
+  /* Reset */
 
   document
     .getElementById(
@@ -1267,22 +1333,28 @@ function showSettingsModal() {
 
         overlay.remove();
 
+
         location.reload();
 
       }
     );
 
 
+  /* Tap outside */
+
   overlay.addEventListener(
     "click",
     event => {
 
       if (event.target === overlay) {
+
         overlay.remove();
+
       }
 
     }
   );
+
 }
 
 
@@ -1346,6 +1418,8 @@ function updateDashboard() {
       : 0;
 
 
+  /* Best streak */
+
   let bestStreak = 0;
 
 
@@ -1361,12 +1435,16 @@ function updateDashboard() {
       habitBest >
       bestStreak
     ) {
+
       bestStreak =
         habitBest;
+
     }
 
   });
 
+
+  /* Elements */
 
   const percentElement =
     document.getElementById(
@@ -1423,6 +1501,8 @@ function updateDashboard() {
 
   progressContainer.innerHTML = "";
 
+
+  /* Habit cards */
 
   habits.forEach(habit => {
 
@@ -1520,6 +1600,7 @@ function updateDashboard() {
     );
 
   });
+
 }
 
 
@@ -1577,12 +1658,11 @@ if (nextMonthButton) {
 
 seedTestHabitsIfEmpty();
 
+
 Grid.render();
+
 
 updateDashboard();
 
-addStatsButton();
 
-addSettingsButton();
-
-addHabitButton();
+setupTopbarButtons();
