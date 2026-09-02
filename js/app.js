@@ -34,10 +34,12 @@ function seedTestHabitsIfEmpty() {
   }
 }
 
+
 function addHabitButton() {
   const topbar = document.querySelector(".topbar");
 
   const button = document.createElement("button");
+
   button.id = "add-habit-button";
   button.textContent = "+";
   button.title = "Add Habit";
@@ -60,8 +62,10 @@ function addHabitButton() {
   topbar.appendChild(button);
 }
 
+
 function showAddHabitModal() {
   const overlay = document.createElement("div");
+
   overlay.id = "habit-modal-overlay";
 
   overlay.style.cssText = `
@@ -107,6 +111,7 @@ function showAddHabitModal() {
         border-radius:10px;
         font-size:16px;
         margin-bottom:16px;
+        box-sizing:border-box;
       "
     />
 
@@ -126,6 +131,7 @@ function showAddHabitModal() {
         border-radius:10px;
         font-size:20px;
         margin-bottom:16px;
+        box-sizing:border-box;
       "
     />
 
@@ -146,10 +152,12 @@ function showAddHabitModal() {
         border-radius:10px;
         font-size:16px;
         margin-bottom:20px;
+        box-sizing:border-box;
       "
     />
 
     <div style="display:flex;gap:10px;">
+
       <button
         id="cancel-habit-button"
         style="
@@ -179,6 +187,7 @@ function showAddHabitModal() {
       >
         Add
       </button>
+
     </div>
   `;
 
@@ -187,25 +196,38 @@ function showAddHabitModal() {
 
   document
     .getElementById("cancel-habit-button")
-    .addEventListener("click", () => overlay.remove());
+    .addEventListener("click", () => {
+      overlay.remove();
+    });
 
   document
     .getElementById("save-habit-button")
     .addEventListener("click", () => {
+
       const name = document
         .getElementById("habit-name-input")
         .value
         .trim();
 
       const icon =
-        document.getElementById("habit-icon-input").value.trim() || "✅";
+        document
+          .getElementById("habit-icon-input")
+          .value
+          .trim() || "✅";
 
       const goal = Number(
-        document.getElementById("habit-goal-input").value
+        document
+          .getElementById("habit-goal-input")
+          .value
       );
 
       if (!name) {
         alert("Please enter a habit name.");
+        return;
+      }
+
+      if (!goal || goal < 1 || goal > 31) {
+        alert("Monthly goal must be between 1 and 31.");
         return;
       }
 
@@ -216,29 +238,20 @@ function showAddHabitModal() {
           name,
           icon,
           color: "#3B82F6",
-          monthlyGoal: goal || 20,
+          monthlyGoal: goal,
           sortOrder: habits.length
         })
       );
 
       overlay.remove();
+
       Grid.render();
+      updateDashboard();
     });
 }
 
-document
-  .getElementById("prev-month")
-  .addEventListener("click", () => Grid.goToPrevMonth());
-
-document
-  .getElementById("next-month")
-  .addEventListener("click", () => Grid.goToNextMonth());
 
 function updateDashboard() {
-  seedTestHabitsIfEmpty();
-addHabitButton();
-Grid.render();
-updateDashboard();
   const habits = Storage.getHabits();
   const completions = Storage.getCompletions();
 
@@ -249,10 +262,12 @@ updateDashboard();
     `${year}-${String(month).padStart(2, "0")}`;
 
   const monthCompletions = completions.filter(
-    completion => completion.dateKey.startsWith(monthPrefix)
+    completion =>
+      completion.dateKey.startsWith(monthPrefix)
   );
 
-  const totalCompletions = monthCompletions.length;
+  const totalCompletions =
+    monthCompletions.length;
 
   const daysInMonth =
     DateHelpers.daysInMonth(year, month);
@@ -263,35 +278,61 @@ updateDashboard();
   const overallPercent =
     possibleCompletions > 0
       ? Math.round(
-          (totalCompletions / possibleCompletions) * 100
+          (totalCompletions /
+            possibleCompletions) *
+            100
         )
       : 0;
 
-  document.getElementById("overall-percent").textContent =
-    `${overallPercent}%`;
+  const percentElement =
+    document.getElementById("overall-percent");
 
-  document.getElementById("total-completions").textContent =
-    totalCompletions;
+  const totalElement =
+    document.getElementById("total-completions");
 
   const progressContainer =
     document.getElementById("habit-progress");
 
+  if (percentElement) {
+    percentElement.textContent =
+      `${overallPercent}%`;
+  }
+
+  if (totalElement) {
+    totalElement.textContent =
+      totalCompletions;
+  }
+
+  if (!progressContainer) {
+    return;
+  }
+
   progressContainer.innerHTML = "";
 
   habits.forEach(habit => {
-    const habitCompletions = monthCompletions.filter(
-      completion => completion.habitId === habit.id
-    ).length;
 
-    const goal = habit.monthlyGoal || daysInMonth;
+    const habitCompletions =
+      monthCompletions.filter(
+        completion =>
+          completion.habitId === habit.id
+      ).length;
 
-    const percent = Math.min(
-      100,
-      Math.round((habitCompletions / goal) * 100)
-    );
+    const goal =
+      habit.monthlyGoal || daysInMonth;
 
-    const card = document.createElement("div");
-    card.className = "progress-card";
+    const percent =
+      Math.min(
+        100,
+        Math.round(
+          (habitCompletions / goal) * 100
+        )
+      );
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "progress-card";
 
     card.innerHTML = `
       <div class="progress-header">
@@ -308,6 +349,7 @@ updateDashboard();
       </div>
 
       <div class="progress-track">
+
         <div
           class="progress-fill"
           style="
@@ -315,16 +357,42 @@ updateDashboard();
             background:${habit.color};
           "
         ></div>
+
       </div>
 
       <div class="progress-footer">
+
         <span>Monthly goal</span>
+
         <span class="progress-percent">
           ${percent}%
         </span>
+
       </div>
     `;
 
     progressContainer.appendChild(card);
   });
 }
+
+
+document
+  .getElementById("prev-month")
+  .addEventListener("click", () => {
+    Grid.goToPrevMonth();
+    updateDashboard();
+  });
+
+
+document
+  .getElementById("next-month")
+  .addEventListener("click", () => {
+    Grid.goToNextMonth();
+    updateDashboard();
+  });
+
+
+seedTestHabitsIfEmpty();
+addHabitButton();
+Grid.render();
+updateDashboard();
