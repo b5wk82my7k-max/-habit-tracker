@@ -251,6 +251,50 @@ function showAddHabitModal() {
 }
 
 
+function calculateBestStreak() {
+  const completions = Storage.getCompletions();
+
+  if (completions.length === 0) {
+    return 0;
+  }
+
+  const dates = [
+    ...new Set(
+      completions.map(completion => completion.dateKey)
+    )
+  ].sort();
+
+  let bestStreak = 1;
+  let currentStreak = 1;
+
+  for (let i = 1; i < dates.length; i++) {
+    const previousDate = new Date(
+      dates[i - 1] + "T00:00:00"
+    );
+
+    const currentDate = new Date(
+      dates[i] + "T00:00:00"
+    );
+
+    const difference =
+      (currentDate - previousDate) /
+      (1000 * 60 * 60 * 24);
+
+    if (difference === 1) {
+      currentStreak++;
+
+      if (currentStreak > bestStreak) {
+        bestStreak = currentStreak;
+      }
+    } else {
+      currentStreak = 1;
+    }
+  }
+
+  return bestStreak;
+}
+
+
 function updateDashboard() {
   const habits = Storage.getHabits();
   const completions = Storage.getCompletions();
@@ -284,11 +328,17 @@ function updateDashboard() {
         )
       : 0;
 
+  const bestStreak =
+    calculateBestStreak();
+
   const percentElement =
     document.getElementById("overall-percent");
 
   const totalElement =
     document.getElementById("total-completions");
+
+  const streakElement =
+    document.getElementById("best-streak");
 
   const progressContainer =
     document.getElementById("habit-progress");
@@ -301,6 +351,11 @@ function updateDashboard() {
   if (totalElement) {
     totalElement.textContent =
       totalCompletions;
+  }
+
+  if (streakElement) {
+    streakElement.textContent =
+      `${bestStreak} 🔥`;
   }
 
   if (!progressContainer) {
