@@ -337,3 +337,48 @@ body {
   padding: 14px;
   border: 1px solid #E5E5EA;
 }
+/* Dashboard layout fix */
+
+.stats-card {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  width: 100%;
+  box-sizing: border-box;
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 16px 8px;
+  margin-bottom: 20px;
+  border: 1px solid #E5E5EA;
+}
+
+.stat {
+  display: block !important;
+  text-align: center;
+}
+
+.stat span {
+  display: block !important;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.stat small {
+  display: block !important;
+  color: #8E8E93;
+  font-size: 12px;
+}
+
+#habit-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.progress-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 14px;
+  border: 1px solid #E5E5EA;
+  box-sizing: border-box;
+}
