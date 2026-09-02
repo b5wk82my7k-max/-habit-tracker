@@ -1162,3 +1162,121 @@ addHabitButton();
 Grid.render();
 
 updateDashboard();
+/* =========================
+   SETTINGS BUTTON
+========================= */
+
+function addSettingsButton() {
+  const topbar = document.querySelector(".topbar");
+
+  const button = document.createElement("button");
+
+  button.id = "settings-button";
+  button.textContent = "⚙️";
+  button.title = "Settings";
+
+  button.style.cssText = `
+    background:white;
+    color:#1C1C1E;
+    border:1px solid #D1D1D6;
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    font-size:17px;
+    cursor:pointer;
+    margin-right:8px;
+  `;
+
+  button.addEventListener("click", showSettingsModal);
+
+  topbar.appendChild(button);
+}
+
+
+function showSettingsModal() {
+  const overlay = document.createElement("div");
+
+  overlay.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:300;
+  `;
+
+  const modal = document.createElement("div");
+
+  modal.style.cssText = `
+    width:100%;
+    max-width:360px;
+    background:white;
+    color:#1C1C1E;
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.25);
+  `;
+
+  modal.innerHTML = `
+    <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    ">
+      <h2 style="margin:0;font-size:23px;">
+        ⚙️ Settings
+      </h2>
+
+      <button id="close-settings"
+        style="
+          border:none;
+          background:#E5E5EA;
+          width:34px;
+          height:34px;
+          border-radius:50%;
+          font-size:20px;
+        ">
+        ×
+      </button>
+    </div>
+
+    <button id="settings-close-button"
+      style="
+        width:100%;
+        padding:13px;
+        border:none;
+        border-radius:12px;
+        background:#3B82F6;
+        color:white;
+        font-size:16px;
+        font-weight:600;
+      ">
+      Done
+    </button>
+  `;
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+
+  document
+    .getElementById("close-settings")
+    .addEventListener("click", () => {
+      overlay.remove();
+    });
+
+  document
+    .getElementById("settings-close-button")
+    .addEventListener("click", () => {
+      overlay.remove();
+    });
+}
+
+
+/* =========================
+   START SETTINGS
+========================= */
+
+addSettingsButton();
